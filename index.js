@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 const path = require('path');
 
 const userRoutes = require('./server/routes/user');
+const postRoutes = require('./server/routes/post');
 
 mongoose.connect(process.env.dbURL)
     .then(console.log("DB Connected!!"))
@@ -23,6 +24,7 @@ app.use(function(req, res, next) {
     next();
 });
 
+app.use('/post', postRoutes);
 app.use('/user', userRoutes);
 
 const PORT = process.env.PORT || 3000;

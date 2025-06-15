@@ -1,55 +1,45 @@
-/** 
 const mongoose = require("mongoose");
 
-// Define the schema
 const postSchema = new mongoose.Schema({
-  userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+  userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   content: { type: String, required: true },
-  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: "User" }] // referencing users who liked the post
+  likes: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }]
 });
 
-// Create model
 const Post = mongoose.model("Post", postSchema);
 
-// Create a new post
+// CREATE
 async function createPost(userId, content) {
-  const newPost = await Post.create({ userId, content, likes: [] });
+  const newPost = await Post.create({ userId, content });
   return newPost;
 }
 
-// Read post by ID
-async function getPost(postId) {
-  return await Post.findById(postId).populate('userId').populate('likes');
+// READ (by user)
+async function getPostsByUser(userId) {
+  return await Post.find({ userId }).populate('userId', 'username');
 }
 
-// Update post content
-async function updatePost(postId, newContent) {
-  return await Post.updateOne({ _id: postId }, { $set: { content: newContent } });
+// UPDATE post content
+async function updatePost(postId, userId, newContent) {
+  const post = await Post.findOneAndUpdate(
+    { _id: postId, userId: userId },
+    { $set: { content: newContent } },
+    { new: true }
+  );
+  if (!post) throw Error("Post not found or unauthorized");
+  return post;
 }
 
-// Delete post
-async function deletePost(postId) {
-  await Post.deleteOne({ _id: postId });
+// DELETE post
+async function deletePost(postId, userId) {
+  const deleted = await Post.findOneAndDelete({ _id: postId, userId: userId });
+  if (!deleted) throw Error("Post not found or unauthorized");
+  return deleted;
 }
 
-// Like a post (adds user ID to likes array)
-async function likePost(postId, userId) {
-  await Post.updateOne({ _id: postId }, { $addToSet: { likes: userId } });
-}
-
-// Unlike a post (removes user ID from likes array)
-async function unlikePost(postId, userId) {
-  await Post.updateOne({ _id: postId }, { $pull: { likes: userId } });
-}
-
-// Export functions
 module.exports = {
   createPost,
-  getPost,
+  getPostsByUser,
   updatePost,
-  deletePost,
-  likePost,
-  unlikePost
+  deletePost
 };
-
-**/

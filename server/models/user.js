@@ -1,57 +1,45 @@
 const mongoose = require("mongoose");
 
 const userSchema = new mongoose.Schema({
-    username: {type: String, unique:true, required:true},
-    //email: {type: String, required:true},
+    username: { type: String, unique: true, required: true },
     password: String,
     followers: [String],
-    following:[String]
-    
-})
+    following: [String]
+});
 
-// create model of schema
 const User = mongoose.model("User", userSchema);
 
+// REGISTER
+async function register(username, password) {
+    const user = await getUser(username);
+    if (user) throw Error('Username is already in use');
 
-//create CRUD functions on model
-
-async function register(username, password){
-  const user = await getUser(username);
-  if(user) throw Error('Username is already in use');
-
-  const newUser = await User.create({
-    username: username,
-    password: password
-  });
-  return user
+    const newUser = await User.create({ username, password });
+    return newUser;
 }
 
-// read a user
-async function login(username, password){
-    const user =  await getUser(username);
-    if(!user) throw Error('Userc not found!')
-    if(user.password != password) throw Error("wronghg password")
-}
-
-// update
-async function updatePassword(id, password){
-    const user = await User.updateOne({ _id: id }, { $set: { password: password } });
+// LOGIN
+async function login(username, password) {
+    const user = await getUser(username);
+    if (!user) throw Error('User not found!');
+    if (user.password !== password) throw Error("Wrong password");
     return user;
 }
 
-
-
-//delete
-async function deleteUser(id){
-    await User.deleteOne({"_id": id})
-
+// UPDATE PASSWORD
+async function updatePassword(id, password) {
+    const user = await User.updateOne({ _id: id }, { $set: { password } });
+    return user;
 }
 
+// DELETE
+async function deleteUser(id) {
+    return await User.deleteOne({ _id: id });
+}
 
-// utility fucntion
+// UTILITY
 async function getUser(username) {
-    return await User.findOne({"username": username})
+    return await User.findOne({ username });
 }
 
-// export all function we want to acces in route
-module.exports = {register,login, updatePassword, deleteUser}
+module.exports = { register, login, updatePassword, deleteUser };
