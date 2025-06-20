@@ -11,7 +11,6 @@ router
         }catch(error){
             res.status(401).send({message: error.message});
         }
-
         
     })
 
@@ -48,6 +47,27 @@ router
         
         }
     })
+
+    router.post('/follow', async (req, res) => {
+        try {
+            const { followerId, followeeId } = req.body;
+            const result = await User.followUser(followerId, followeeId);
+            res.send(result);
+        }   catch (error) {
+            res.status(400).send({ message: error.message });
+        }
+    });
+      
+      router.post('/unfollow', async (req, res) => {
+        try {
+          const { followerId, followeeId } = req.body;
+          const result = await User.unfollowUser(followerId, followeeId);
+          res.send(result);
+        } catch (error) {
+          res.status(400).send({ message: error.message });
+        }
+    });
+      
 
     module.exports = router;
 

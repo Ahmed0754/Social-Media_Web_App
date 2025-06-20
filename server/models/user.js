@@ -40,6 +40,44 @@ async function deleteUser(id) {
 // UTILITY
 async function getUser(username) {
     return await User.findOne({ username });
+
+
+// Follow and Unfollow different users
+
 }
 
-module.exports = { register, login, updatePassword, deleteUser };
+async function followUser(followerId, followeeId) {
+    if (followerId === followeeId) throw Error("Users can't follow themselves");
+  
+    const follower = await User.findById(followerId);
+    const followee = await User.findById(followeeId);
+  
+    if (!follower || !followee) throw Error("User not found");
+  
+    if (!follower.following.includes(followeeId)) {
+      follower.following.push(followeeId);
+      followee.followers.push(followerId);
+  
+      await follower.save();
+      await followee.save();
+    }
+  
+    return { message: "Followed successfully" };
+  }
+  
+  async function unfollowUser(followerId, followeeId) {
+    const follower = await User.findById(followerId);
+    const followee = await User.findById(followeeId);
+  
+    if (!follower || !followee) throw Error("User not found");
+  
+    follower.following = follower.following.filter(id => id !== followeeId);
+    followee.followers = followee.followers.filter(id => id !== followerId);
+  
+    await follower.save();
+    await followee.save();
+  
+    return { message: "Unfollowed successfully" };
+  }
+  
+  module.exports = { register, login, updatePassword, deleteUser, followUser, unfollowUser };
