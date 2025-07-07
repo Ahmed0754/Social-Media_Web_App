@@ -12,7 +12,7 @@ const UsersList = () => {
 
   const fetchAllUsers = async () => {
     try {
-      const data = await fetchData("/user/all"); // 🔁 You'll need to add this backend route
+      const data = await fetchData("/user/all"); 
       const otherUsers = data.filter((u) => u._id !== currentUser._id);
       setUsers(otherUsers);
     } catch (err) {

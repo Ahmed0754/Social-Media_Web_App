@@ -37,7 +37,7 @@ const LoginForm = () => {
       })
       .catch((error) => {
         console.log(error);
-        console.error("❌ Login error:", error); // ADD THIS
+        console.error(" Login error:", error); // ADD THIS
         alert("An error occurred during login.");
       });
   };
