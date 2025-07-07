@@ -67,6 +67,15 @@ router
           res.status(400).send({ message: error.message });
         }
     });
+
+    router.get('/all', async (req, res) => {
+        try {
+          const users = await User.getAllUsers(); // You’ll create this function next
+          res.send(users);
+        } catch (error) {
+          res.status(500).send({ message: error.message });
+        }
+      });
       
 
     module.exports = router;

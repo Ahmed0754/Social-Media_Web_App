@@ -1,15 +1,29 @@
 import './App.css';
-import Navbar from './components/Navbar.js';
-import Register from './components/RegisterForm.js'
-import Login from './components/LoginForm.js'
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import Navbar from './components/pages/Navbar.js';
+import Register from './components/pages/RegisterForm.js';
+import Login from './components/pages/LoginForm.js';
+import Profile from './components/pages/Profile';
+import UsersList from './components/pages/UsersList';
+
+
+
 
 function App() {
   return (
-    <div className="App">
-      <Navbar />
-      <Register />
-      <Login />
-    </div>
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<Navbar />}>
+          <Route index element={<Login />} />
+          <Route path="register" element={<Register />} />
+          <Route path="login" element={<Login />} />
+          <Route path="profile" element={<Profile />} />
+          <Route path="users" element={<UsersList />} />
+
+
+        </Route>
+      </Routes>
+   </BrowserRouter>
   );
 }
 

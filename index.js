@@ -3,34 +3,37 @@ const express = require("express");
 const app = express();
 const mongoose = require("mongoose");
 const path = require('path');
+const cors = require('cors');
 
 const userRoutes = require('./server/routes/user');
 const postRoutes = require('./server/routes/post');
 const commentRoutes = require('./server/routes/comment');
 
-
+// ✅ Connect to MongoDB
 mongoose.connect(process.env.dbURL)
-    .then(console.log("DB Connected!!"))
-    .catch(error => console.log(error));
+  .then(() => console.log("✅ DB Connected!"))
+  .catch(error => console.log(error));
 
+// ✅ Use CORS properly
+app.use(cors());
+
+// ✅ Parse JSON body
 app.use(express.json());
 
-app.use(express.static(__dirname+"/public"));
-app.get('/', (req, res) => res.sendFile(path.join(__dirname, '/public', 'index.html')));
+// ✅ Serve static files
+app.use(express.static(path.join(__dirname, "public")));
+app.get('/', (req, res) => res.sendFile(path.join(__dirname, 'public', 'index.html')));
 
-
-app.use(function(req, res, next) {
-    res.header("Access-Control-Allow_Origin", "*");
-    res.header("Access-Control-Allow-Headers", "Origin, X-Requested-Width, Content-TypeError, Accept, Authorization");
-    res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
-    next();
-});
-
-app.use('/post', postRoutes);
+// ✅ API routes (✅ fix this line!)
+app.use('/api/posts', postRoutes);
 app.use('/user', userRoutes);
 app.use('/comment', commentRoutes);
 
+// ✅ Fallback 404 route (optional but useful)
+app.use((req, res) => {
+  res.status(404).json({ message: 'Route not found' });
+});
 
-
-const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`Server started on port ${PORT}!`));
+// ✅ Start server
+const PORT = process.env.PORT || 8000;
+app.listen(PORT, () => console.log(`✅ Server started on port ${PORT}`));
