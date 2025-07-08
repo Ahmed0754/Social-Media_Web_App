@@ -1,6 +1,6 @@
 const express = require("express");
 const Post = require('../models/post');
-const Comment = require('../models/comment'); // ✅ ADD THIS
+const Comment = require('../models/comment'); // add
 const router = express.Router();
 
 // GET posts by userId (ObjectId) + comments
@@ -25,7 +25,7 @@ router.get('/user/:userId', async (req, res) => {
 // GET all posts with user info and comments
 router.get("/all", async (req, res) => {
   try {
-    const posts = await Post.getAllPosts(); // ✅ in model, we'll define this
+    const posts = await Post.getAllPosts(); 
     const postsWithComments = await Promise.all(
       posts.map(async (post) => {
         const comments = await Comment.getCommentsByPost(post._id);
@@ -78,7 +78,7 @@ router.delete('/delete', async (req, res) => {
 router.post("/like", async (req, res) => {
   try {
     const { userId, postId } = req.body;
-    const post = await Post.likePost(postId, userId); // ✅ this should be in model
+    const post = await Post.likePost(postId, userId); // 
     res.json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });

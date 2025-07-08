@@ -11,7 +11,7 @@ const commentRoutes = require('./server/routes/comment');
 
 //  Connect to MongoDB
 mongoose.connect(process.env.dbURL)
-  .then(() => console.log("✅ DB Connected!"))
+  .then(() => console.log(" DB Connected!"))
   .catch(error => console.log(error));
 
 //  Use CORS properly
