@@ -1,12 +1,38 @@
 const express = require("express");
 const Post = require('../models/post');
+const Comment = require('../models/comment'); // ✅ ADD THIS
 const router = express.Router();
 
-// GET posts by userId (ObjectId)
+// GET posts by userId (ObjectId) + comments
 router.get('/user/:userId', async (req, res) => {
   try {
     const posts = await Post.getPostsByUser(req.params.userId);
-    res.json(posts);
+
+    // Fetch and attach comments
+    const postsWithComments = await Promise.all(
+      posts.map(async (post) => {
+        const comments = await Comment.getCommentsByPost(post._id);
+        return { ...post.toObject(), comments };
+      })
+    );
+
+    res.json(postsWithComments);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// GET all posts with user info and comments
+router.get("/all", async (req, res) => {
+  try {
+    const posts = await Post.getAllPosts(); // ✅ in model, we'll define this
+    const postsWithComments = await Promise.all(
+      posts.map(async (post) => {
+        const comments = await Comment.getCommentsByPost(post._id);
+        return { ...post.toObject(), comments };
+      })
+    );
+    res.json(postsWithComments);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -26,6 +52,7 @@ router.post('/', async (req, res) => {
   }
 });
 
+// Update post
 router.put('/update', async (req, res) => {
   try {
     const { postId, userId, content } = req.body;
@@ -36,11 +63,23 @@ router.put('/update', async (req, res) => {
   }
 });
 
+// Delete post
 router.delete('/delete', async (req, res) => {
   try {
     const { postId, userId } = req.body;
     const deleted = await Post.deletePost(postId, userId);
     res.json({ message: "Post deleted successfully", post: deleted });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+});
+
+// Like post
+router.post("/like", async (req, res) => {
+  try {
+    const { userId, postId } = req.body;
+    const post = await Post.likePost(postId, userId); // ✅ this should be in model
+    res.json(post);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

@@ -45,4 +45,14 @@ router.delete("/delete", async (req, res) => {
   }
 });
 
+router.post("/add", async (req, res) => {
+  try {
+    const { userId, postId, content } = req.body;
+    const comment = await Comment.addComment(userId, postId, content);
+    res.send(comment);
+  } catch (error) {
+    res.status(400).send({ message: error.message });
+  }
+});
+
 module.exports = router;

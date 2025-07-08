@@ -10,16 +10,20 @@ const Post = mongoose.model("Post", postSchema);
 
 // CREATE
 async function createPost(userId, content) {
-  const newPost = await Post.create({ userId, content });
-  return newPost;
+  return await Post.create({ userId, content });
 }
 
-// READ (by user)
+// READ: All posts (with user populated)
+async function getAllPosts() {
+  return await Post.find().populate("userId", "username");
+}
+
+// READ: Posts by specific user
 async function getPostsByUser(userId) {
-  return await Post.find({ userId }).populate('userId', 'username');
+  return await Post.find({ userId }).populate("userId", "username");
 }
 
-// UPDATE post content
+// UPDATE post
 async function updatePost(postId, userId, newContent) {
   const post = await Post.findOneAndUpdate(
     { _id: postId, userId: userId },
@@ -37,9 +41,25 @@ async function deletePost(postId, userId) {
   return deleted;
 }
 
+// LIKE a post
+async function likePost(postId, userId) {
+  const post = await Post.findById(postId);
+  if (!post) throw Error("Post not found");
+
+  if (!post.likes.includes(userId)) {
+    post.likes.push(userId);
+    await post.save();
+  }
+
+  return { message: "Post liked", likes: post.likes.length };
+}
+
 module.exports = {
+  Post, // keeping this in case you're using it somewhere else
   createPost,
+  getAllPosts,
   getPostsByUser,
   updatePost,
-  deletePost
+  deletePost,
+  likePost
 };
