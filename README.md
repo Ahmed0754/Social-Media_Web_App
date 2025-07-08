@@ -11,10 +11,4 @@ Database: MongoDB (with Mongoose)
 Getting Started
 Follow the steps below to run the application locally:          
 
-1. Clone the Repository
-git clone https://github.com/kaitlinchoffmann/InterfaceSU25
-cd InterfaceSU25
-2. Set Up the Backend
-npm install
-3. Start the Server
-npm run dev
+
