@@ -69,6 +69,18 @@ const Profile = () => {
     }
   };
 
+  const deletePost = async (postId) => {
+    try {
+      await fetchData(`/api/posts/delete`, {
+        postId,
+        userId: user._id
+      }, 'DELETE');
+      fetchUserPosts();
+    } catch (error) {
+      console.error("Error deleting post:", error);
+    }
+  };
+
   return (
     <div className="container mt-4">
       <h2 className="mb-4">Welcome, {user?.username}</h2>
@@ -91,7 +103,15 @@ const Profile = () => {
       <ul className="list-group">
         {posts.map((post) => (
           <li key={post._id} className="list-group-item mb-3">
-            <p><strong>Post:</strong> {post.content}</p>
+            <div className="d-flex justify-content-between align-items-center">
+              <p className="mb-0"><strong>Post:</strong> {post.content}</p>
+              <button
+                className="btn btn-sm btn-outline-danger"
+                onClick={() => deletePost(post._id)}
+              >
+                🗑 Delete
+              </button>
+            </div>
             <small className="text-muted">Likes: {post.likes?.length || 0}</small>
 
             <div className="mt-2">
